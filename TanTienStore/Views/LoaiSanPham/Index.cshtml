@@ -1,0 +1,80 @@
+﻿@model IEnumerable<TanTienStore.Models.LoaiSanPhamModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container-fluid  dashboard-content">
+    <!-- ============================================================== -->
+    <!-- pageheader -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="page-header">
+                <h2 class="pageheader-title">Quản Lý Sản Phẩm </h2>
+                <p>
+                    <a class="btn btn-primary btn-sm" asp-action="Create">Thêm mới</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- end pageheader -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <!-- ============================================================== -->
+        <!-- basic table -->
+        <!-- ============================================================== -->
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card">
+                <h5 class="card-header">Loại Sản Phẩm</h5>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Mã Loại Sản Phẩm
+                                </th>
+                                <th>
+                                    Tên Loại Sản Phẩm
+                                </th>
+                                <th>Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LoaiSPId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.LoaiSPId">Sửa</a> |
+                                        <a asp-action="Details" asp-route-id="@item.LoaiSPId">Chi tiết</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.LoaiSPId">Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end basic table -->
+        <!-- ============================================================== -->
+</div>
+
+
+
+
+
+
+
+
+
+

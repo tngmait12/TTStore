@@ -1,0 +1,231 @@
+﻿@model TanTienStore.Models.StatisticsViewModel
+
+<div class="container">
+    <h2 class="my-4">Thống Kê Cửa Hàng</h2>
+    
+
+    <!-- Thống kê 4 ô -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Doanh Thu</h5>
+                    <p class="card-text">@string.Format("{0:C}", Model.TotalRevenue)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Hóa Đơn</h5>
+                    <p class="card-text">@Model.TotalInvoices</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Sản Phẩm Bán Ra</h5>
+                    <p class="card-text">@Model.TotalProductsSold</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Chiết Khấu</h5>
+                    <p class="card-text">@string.Format("{0:C}", Model.TotalDiscount)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thêm nút chuyển đổi giữa chế độ xem theo ngày, tháng và năm -->
+    <h3>Period: @Model.Period</h3>
+    <div class="mb-3">
+        <a href="@Url.Action("Index", new { viewType = "daily" })" class="btn btn-primary @(!Model.IsDailyView ? "btn-outline-secondary" : "")">Theo Ngày</a>
+        <a href="@Url.Action("Index", new { viewType = "monthly" })" class="btn btn-primary @(Model.IsMonthlyView ? "btn-outline-secondary" : "")">Theo Tháng</a>
+        <a href="@Url.Action("Index", new { viewType = "yearly" })" class="btn btn-primary @(Model.IsYearlyView ? "btn-outline-secondary" : "")"> Theo Năm</a>
+    </div>
+
+    <!-- Biểu đồ đường gấp khúc doanh thu -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4 class="mb-4">
+                Doanh Thu @if (Model.IsDailyView)
+
+                {
+                    <text>Theo Ngày</text>
+                }
+
+                else if (Model.IsMonthlyView)
+
+                {
+                    <text>Theo Tháng</text>
+                }
+
+                else
+
+                {
+                    <text>Theo Năm</text>
+                }
+            </h4>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <!-- Biểu đồ Đường Gấp Khúc - Số Hóa Đơn -->
+        <div class="col-md-6">
+            <h4 class="mb-4">
+                Số Hóa Đơn
+                @if (Model.IsDailyView)
+
+                {
+                    <text>Theo Ngày</text>
+                }
+
+                else if (Model.IsMonthlyView)
+
+                {
+                    <text>Theo Tháng</text>
+                }
+
+                else
+
+                {
+                    <text>Theo Năm</text>
+                }
+            </h4>
+            <canvas id="invoiceChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Biểu đồ Đường Gấp Khúc - Tổng Sản Phẩm Bán Ra -->
+        <div class="col-md-6">
+            <h4 class="mb-4">
+                Tổng Sản Phẩm Bán Ra
+                @if (Model.IsDailyView)
+
+                {
+                    <text>Theo Ngày</text>
+                }
+
+                else if (Model.IsMonthlyView)
+
+                {
+                    <text>Theo Tháng</text>
+                }
+
+                else
+
+                {
+                    <text>Theo Năm</text>
+                }
+            </h4>
+            <canvas id="productsSoldChart"></canvas>
+        </div>
+
+        <div class="col-md-6">
+            <h4 class="mb-4">
+                Tổng Chiết Khấu
+                @if (Model.IsDailyView)
+
+                {
+                    <text>Theo Ngày</text>
+                }
+
+                else if (Model.IsMonthlyView)
+
+                {
+                    <text>Theo Tháng</text>
+                }
+
+                else
+
+                {
+                    <text>Theo Năm</text>
+                }
+            </h4>
+            <canvas id="discountChart"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Biểu đồ Số Hóa Đơn
+        new Chart(document.getElementById('invoiceChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.DateLabels)),
+                datasets: [{
+                    label: 'Số Hóa Đơn',
+                    data: @Html.Raw(Json.Serialize(Model.InvoiceCounts)),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+
+        // Biểu đồ Tổng Sản Phẩm Bán Ra
+        new Chart(document.getElementById('productsSoldChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.DateLabels)),
+                datasets: [{
+                    label: 'Tổng Sản Phẩm Bán Ra',
+                    data: @Html.Raw(Json.Serialize(Model.ProductsSoldData)),
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+
+        // Biểu đồ Tổng Chiết Khấu
+        new Chart(document.getElementById('discountChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.DateLabels)),
+                datasets: [{
+                    label: 'Tổng Chiết Khấu',
+                    data: @Html.Raw(Json.Serialize(Model.DiscountData)),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+
+        // Biểu đồ Đường Gấp Khúc - Doanh Thu Theo Ngày, Tháng hoặc Năm
+        var ctxLineChart = document.getElementById('lineChart').getContext('2d');
+        var lineChart = new Chart(ctxLineChart, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.DateLabels)), // Nhãn ngày, tháng, hoặc năm từ Model
+                datasets: [{
+                    label: 'Doanh Thu',
+                    data: @Html.Raw(Json.Serialize(Model.RevenueData)), // Dữ liệu doanh thu từ Model
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
